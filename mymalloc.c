@@ -12,42 +12,46 @@
 #define FALSE 0
 
 static char memory[MEM_SIZE];
+typedef int size_t;
 
-void *mymalloc(size_t size, char *file, int line)
-{
+void *mymalloc(size_t size, char *file, int line) {
     // check if the array is empty
-    if (memory[0] == NULL)
-    {
+    if (memory[0] == NULL) {
         memory[0] = NOT_ALLOC;
         memory[1] = MEM_SIZE - META_LENGTH;
     }
 
     // find a free chunk
     int index = 0;
-    while (1)
-    {
+    while (TRUE) {
+
         if (index >= MEM_SIZE)
             return NULL;
 
         char curr_alloc_stat = memory[index];
         int curr_alloc_size = memory[index+1];
 
-        if(curr_alloc_stat == NOT_ALLOC && curr_alloc_size >= size)
+        if (curr_alloc_stat == NOT_ALLOC && curr_alloc_size >= size + META_LENGTH)
             break;
-        else
-        {
+
+        else {
             index = index + META_LENGTH + curr_alloc_size;
         }
     }
 
 
     // allocate a chunk of memory
-    char alloc
-    size_t alloc_size
+    // sets up the metadata for the next block
+    size_t curr_size = memory[index + STAT_SIZE];
+    memory[index + META_LENGTH + size] = NOT_ALLOC;
+    memory[index + META_LENGTH + size + STAT_LENGTH] = curr_size - size;
 
-    memory[0] = alloc
-    memory[1] = alloc_size
-    int *p = &memory[1]
+    // adjusts the metadata of the block of memory to be returned
+    memory[index] = ALLOC;
+    memory[index+1] = size;
+    int *p = &memory[index + META_LENGTH];
+
+    return p;
 }
 
 void myfree(void *ptr, char *file, int line)
