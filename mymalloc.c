@@ -50,7 +50,7 @@ void *mymalloc(size_t size, char *file, int line) {
     if (createNewBlock) {
     	size_t curr_size = memory[index + STAT_SIZE];
     	memory[index + META_LENGTH + size] = NOT_ALLOC;
-    	memory[index + META_LENGTH + size + STAT_LENGTH] = curr_size - size;
+    	memory[index + META_LENGTH + size + STAT_LENGTH] = curr_size - size - META_LENGTH;
 
     	// adjusts the metadata of the block of memory to be returned
     	memory[index] = ALLOC;
@@ -60,7 +60,7 @@ void *mymalloc(size_t size, char *file, int line) {
     	memory[index] = ALLOC;
 
     int *p = &memory[index + META_LENGTH];
-    	return p;
+    return p;
 
 
 
