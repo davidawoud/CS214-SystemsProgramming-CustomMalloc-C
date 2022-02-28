@@ -8,59 +8,66 @@
 #define META_LENGTH 5
 #define NOT_ALLOC '0'
 #define ALLOC '1'
+#define SMALLEST_FREE 4
 #define TRUE 1
 #define FALSE 0
 
 static char memory[MEM_SIZE];
-//typedef int size_t;
 
 void *mymalloc(size_t size, char *file, int line)
 {
-/*
     // check if the array is empty
     if (memory[0] == NULL) {
         memory[0] = NOT_ALLOC;
         memory[1] = MEM_SIZE - META_LENGTH;
     }
-
     // find a free chunk
     int index = 0;
+    int createNewBlock = FALSE;
     while (TRUE) {
-
         if (index >= MEM_SIZE)
             return NULL;
-
         char curr_alloc_stat = memory[index];
-        int curr_alloc_size = memory[index+1];
-
-        if (curr_alloc_stat == NOT_ALLOC && curr_alloc_size >= size + META_LENGTH)
+        size_t curr_alloc_size = memory[index+1];
+        if (curr_alloc_stat == NOT_ALLOC && curr_alloc_size >= size) {
+        	if (curr_alloc_size >= size + META_LENGTH + SMALLEST_FREE) {
+        		createNewBlock = TRUE;
+        	}
             break;
-
+        }
         else {
             index = index + META_LENGTH + curr_alloc_size;
         }
     }
-
-
     // allocate a chunk of memory
     // sets up the metadata for the next block
-    size_t curr_size = memory[index + STAT_LENGTH];
-    memory[index + META_LENGTH + size] = NOT_ALLOC;
-    memory[index + META_LENGTH + size + STAT_LENGTH] = curr_size - size;
-
-    // adjusts the metadata of the block of memory to be returned
-    memory[index] = ALLOC;
-    memory[index+1] = size;
+    if (createNewBlock) {
+    	size_t curr_size = memory[index + STAT_LENGTH];
+    	memory[index + META_LENGTH + size] = NOT_ALLOC;
+    	memory[index + META_LENGTH + size + STAT_LENGTH] = curr_size - size - META_LENGTH;
+    	// adjusts the metadata of the block of memory to be returned
+    	memory[index] = ALLOC;
+    	memory[index+1] = size;
+    }
+    else
+    	memory[index] = ALLOC;
     int *p = &memory[index + META_LENGTH];
-
     return p;
-    */
 }
 
 void myfree(void *ptr, char *file, int line)
 {
+    if (ptr == NULL)
+    {
+        printf("Null pointer at %s: line %d\n", file, line);
+        exit(EXIT_FAILURE);
+    }
+
     if (ptr < &memory[0] || ptr >= &memory[MEM_SIZE])
-        EXIT_FAILURE;
+    {
+        printf("pointer out of bounds (not provided by mymalloc) at %s: line %d\n", file, line);
+        exit(EXIT_FAILURE);
+    }
 
     int index = 0;
     int prev_index = -1;
@@ -70,9 +77,14 @@ void myfree(void *ptr, char *file, int line)
         size_t curr_alloc_size = memory[index+1];
         void *curr_ptr = &memory[index + META_LENGTH];
         int next_index = index + META_LENGTH + curr_alloc_size;
+        if (next_index >= MEM_SIZE)
+            next_index = -1;
 
         if (curr_ptr > ptr)
-            EXIT_FAILURE;
+        {
+            printf("pointer in the middle of a memmory block (not provided by mymalloc) at %s: line %d\n", file, line);
+            exit(EXIT_FAILURE);
+        }
         if (curr_ptr < ptr)
         {
             prev_index = index;
@@ -80,15 +92,27 @@ void myfree(void *ptr, char *file, int line)
             continue;
         }
         if (curr_alloc_stat == NOT_ALLOC)
-            EXIT_FAILURE;
+        {
+            printf("trying to free a free memmory block at %s: line %d\n", file, line);
+            exit(EXIT_FAILURE);
+        }
 
+        // freeing a block
         char prev_alloc_stat = '9';
+        size_t prev_alloc_size = 0;
         if (prev_index != -1)
+        {
             prev_alloc_stat = memory[prev_index];
-        size_t prev_alloc_size = memory[prev_index+1];
+            prev_alloc_size = memory[prev_index+1];
+        }
         
-        char next_alloc_stat = memory[next_index];
-        size_t next_alloc_size = memory[next_index+1];
+        char next_alloc_stat = '9';
+        size_t next_alloc_size = 0;
+        if (next_index != -1)
+        {
+            next_alloc_stat = memory[next_index];
+            next_alloc_size = memory[next_index+1];
+        }
 
         if (prev_alloc_stat == NOT_ALLOC && next_alloc_stat == NOT_ALLOC)
             memory[prev_index+1] = prev_alloc_size + curr_alloc_size + next_alloc_size + (2 * META_LENGTH);
