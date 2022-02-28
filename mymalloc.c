@@ -27,8 +27,10 @@ void *mymalloc(size_t size, char *file, int line) {
     int createNewBlock = FALSE;
     while (TRUE) {
 
-        if (index >= MEM_SIZE)
+        if (index >= MEM_SIZE) {
+        	printf("No memory available for malloc call in %s: line %d\n", file, line);
             return NULL;
+        }
 
         char curr_alloc_stat = memory[index];
         size_t curr_alloc_size = memory[index+1];
