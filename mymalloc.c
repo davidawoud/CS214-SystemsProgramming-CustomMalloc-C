@@ -13,7 +13,6 @@
 #define FALSE 0
 
 static char memory[MEM_SIZE];
-typedef unsigned int size_t;
 
 void *mymalloc(size_t size, char *file, int line) {
     // check if the array is empty
