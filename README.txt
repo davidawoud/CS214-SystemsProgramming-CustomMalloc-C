@@ -18,7 +18,7 @@ Test 8: Call Malloc 4 times with size 1000, Free the middle 2 pointers, and then
 
 Stress Tests 1, 2, and 3 given in project assignment writeup
 Stress Test 4: Call malloc(1) until memory runs out, then frees the accumulated pointers
-Stress Test 5: 
+Stress Test 5: Call malloc(1) and free() at 3:1 ratio until memory is full, then free all pointers
 
 
 
