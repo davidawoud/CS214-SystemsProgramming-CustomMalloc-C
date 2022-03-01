@@ -18,6 +18,3 @@ Stress Test 2: Use malloc() to get 120 1-byte chunks, storing the pointers in an
 Stress Test 3: Randomly choose between allocating a 1-byte chunk and storing the pointer in an array and deallocating one of the chunks in the array (if any)
 Stress Test 4: Call malloc(1) until memory runs out, then frees the accumulated pointers
 Stress Test 5: Call malloc(1) and free() at 3:1 ratio until memory is full, then free all pointers
-
-
-
