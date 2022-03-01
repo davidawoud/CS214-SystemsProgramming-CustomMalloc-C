@@ -17,7 +17,7 @@ Test 7: Fill the memory array completely with multiple calls to Malloc, Free som
 Test 8: Call Malloc 4 times with size 1000, Free the middle 2 pointers, and then call Malloc with a size 2000
 
 Stress Tests 1, 2, and 3 given in project assignment writeup
-Stress Test 4: 
+Stress Test 4: Call malloc(1) 500 times and free them
 Stress Test 5: 
 
 
