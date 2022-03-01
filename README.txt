@@ -12,11 +12,6 @@ In crashtest2.c: Call free() on an address out of bounds
 In crashtest3.c: Call free() on an address not provided by malloc()
 In crashtest4.c: Call free() on the address of a free block
 
-Test 1: Call Malloc with a size greater than memory
-Test 2: Call Malloc on a full memory array
-Test 7: Fill the memory array completely with multiple calls to Malloc, Free some blocks, and then call Malloc again
-Test 8: Call Malloc 4 times with size 1000, Free the middle 2 pointers, and then call Malloc with a size 2000
-
 In memgrind.c: 
 Stress Test 1: malloc() and immediately free() a 1-byte chunk, 120 times
 Stress Test 2: Use malloc() to get 120 1-byte chunks, storing the pointers in an array, then use free() to deallocate the chunks
